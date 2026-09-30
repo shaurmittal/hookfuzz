@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"slices"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 // Config says how aggressively to perturb delivery. Probabilities are per event.

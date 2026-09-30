@@ -11,10 +11,10 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/report"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/report"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 const usage = `hookfuzz: chaos testing for payment webhook handlers

@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 // fakeShop ships an order for every checkout.session.completed it sees.

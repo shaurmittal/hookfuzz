@@ -9,8 +9,8 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 const (

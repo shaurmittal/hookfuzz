@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 func TestGenerateIsDeterministic(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 // State is the app's inspection snapshot: collection name -> objects.

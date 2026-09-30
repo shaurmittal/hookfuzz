@@ -16,12 +16,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 const secret = "whsec_e2e_secret"

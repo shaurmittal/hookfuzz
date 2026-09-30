@@ -7,14 +7,14 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/deliver"
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/scenario"
-	"github.com/shauryamittal/hookfuzz/internal/shrink"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/deliver"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/scenario"
+	"github.com/shaurmittal/hookfuzz/internal/shrink"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 // Target is the app under test.

@@ -21,7 +21,7 @@
 - **Invariants live in a config file** (`hookfuzz.yaml`). Ordering invariants compare against the event `created` timestamp, **never arrival order**.
 - **Shrinking** uses delta debugging. Output is a readable timeline plus the seed and a `hookfuzz replay --seed N` command.
 - Out of scope: recording/replaying real Stripe traffic, a web UI, other providers, a GitHub Action.
-- Go module path: `github.com/shauryamittal/hookfuzz` (change it in Task 1 if the GitHub username differs, and update the imports to match).
+- Go module path: `github.com/shaurmittal/hookfuzz` (change it in Task 1 if the GitHub username differs, and update the imports to match).
 
 Design decisions this plan makes where the spec leaves a choice (keep them consistent across tasks):
 - **Delivery is sequential.** Concurrency would make runs non-reproducible. "Delay" means moving a delivery later in the sequence, not wall-clock sleeping.
@@ -108,7 +108,7 @@ brew install go
 go version        # expect go1.22 or newer
 cd /Users/shauryamittal/Desktop/proj
 git init
-go mod init github.com/shauryamittal/hookfuzz
+go mod init github.com/shaurmittal/hookfuzz
 ```
 
 Create `.gitignore`:
@@ -275,7 +275,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 func TestGenerateIsDeterministic(t *testing.T) {
@@ -410,7 +410,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 const (
@@ -568,7 +568,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 func testEvents(n int) []event.Event {
@@ -724,7 +724,7 @@ import (
 	"math/rand"
 	"slices"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 // Config says how aggressively to perturb delivery. Probabilities are per event.
@@ -847,7 +847,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 func TestSendSignsAndPostsJSON(t *testing.T) {
@@ -967,7 +967,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 // State is the app's inspection snapshot: collection name -> objects.
@@ -1107,7 +1107,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 type fakeSender struct {
@@ -1222,7 +1222,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 const (
@@ -1323,8 +1323,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 var (
@@ -1499,8 +1499,8 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 const (
@@ -2051,9 +2051,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/scenario"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/scenario"
 )
 
 // DefaultScenarioSize is how many objects each scenario creates per run.
@@ -2214,11 +2214,11 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 // fakeShop ships an order for every checkout.session.completed it sees.
@@ -2340,14 +2340,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/deliver"
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/scenario"
-	"github.com/shauryamittal/hookfuzz/internal/shrink"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/deliver"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/scenario"
+	"github.com/shaurmittal/hookfuzz/internal/shrink"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 // Target is the app under test.
@@ -2494,9 +2494,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
 )
 
 func ev(id, typ, obj string, created int64) event.Event {
@@ -2583,8 +2583,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
 )
 
 // Failure prints the broken invariant, the minimal timeline, and how to replay it.
@@ -2692,7 +2692,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 // fakeShop is a tiny HTTP app with hookfuzz's inspection endpoints. It ships
@@ -2867,10 +2867,10 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/report"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/report"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 const usage = `hookfuzz: chaos testing for payment webhook handlers
@@ -3391,12 +3391,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shauryamittal/hookfuzz/internal/config"
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
-	"github.com/shauryamittal/hookfuzz/internal/target"
+	"github.com/shaurmittal/hookfuzz/internal/config"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/target"
 )
 
 const secret = "whsec_e2e_secret"
