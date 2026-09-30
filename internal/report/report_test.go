@@ -75,3 +75,14 @@ func TestPass(t *testing.T) {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 }
+
+func TestFailureReportSaysWhenShrinkingStoppedEarly(t *testing.T) {
+	var b bytes.Buffer
+	Failure(&b, &runner.Failure{
+		Seed: 3, Invariant: "x", Incomplete: "interrupted",
+		Violations: []invariant.Violation{{Invariant: "x", Message: "boom"}},
+	}, "hookfuzz.yaml")
+	if !strings.Contains(b.String(), "shrinking stopped early (interrupted)") {
+		t.Fatalf("got:\n%s", b.String())
+	}
+}

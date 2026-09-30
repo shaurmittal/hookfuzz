@@ -185,3 +185,15 @@ func TestRejectedDeliveriesAreASetupError(t *testing.T) {
 		t.Fatalf("code %d, stdout %q, stderr %q; want exit 2 and a hint about signing_secret", code, stdout, stderr)
 	}
 }
+
+func TestInterruptedRunExits130(t *testing.T) {
+	srv := httptest.NewServer(fakeShop(true))
+	defer srv.Close()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	var out, errOut bytes.Buffer
+	code := run(ctx, []string{"run", "--config", writeConfig(t, srv.URL)}, &out, &errOut)
+	if code != 130 || !strings.Contains(errOut.String(), "interrupted") || strings.Contains(errOut.String(), "is the app running?") {
+		t.Fatalf("code %d, stderr %q; want 130 and an interrupted message", code, errOut.String())
+	}
+}

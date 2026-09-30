@@ -23,7 +23,8 @@ Usage:
   hookfuzz run    [--config hookfuzz.yaml] [--seed 1] [--runs 100]
   hookfuzz replay --seed N [--config hookfuzz.yaml]
 
-Exit codes: 0 all invariants held, 1 an invariant failed, 2 usage or setup error.
+Exit codes: 0 all invariants held, 1 an invariant failed, 2 usage or setup error,
+130 interrupted.
 `
 
 func main() {
@@ -71,8 +72,7 @@ func cmdRun(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	f, n, err := r.Run(ctx, *seed, *runs)
 	if err != nil {
-		fmt.Fprintln(stderr, "hookfuzz:", err)
-		return 2
+		return runError(ctx, err, stderr)
 	}
 	if f != nil {
 		report.Failure(stdout, f, *configPath)
@@ -103,8 +103,7 @@ func cmdReplay(ctx context.Context, args []string, stdout, stderr io.Writer) int
 	}
 	f, err := r.RunSeed(ctx, *seed)
 	if err != nil {
-		fmt.Fprintln(stderr, "hookfuzz:", err)
-		return 2
+		return runError(ctx, err, stderr)
 	}
 	if f != nil {
 		report.Failure(stdout, f, *configPath)
@@ -128,6 +127,16 @@ func newRunner(configPath string) (*runner.Runner, error) {
 			Secret:     cfg.Target.SigningSecret,
 		},
 	}, nil
+}
+
+// runError reports a run that could not finish and picks its exit code.
+func runError(ctx context.Context, err error, stderr io.Writer) int {
+	if ctx.Err() != nil {
+		fmt.Fprintln(stderr, "hookfuzz: interrupted")
+		return 130
+	}
+	fmt.Fprintln(stderr, "hookfuzz:", err)
+	return 2
 }
 
 func flagExit(err error) int {

@@ -89,7 +89,9 @@ hookfuzz run    [--config hookfuzz.yaml] [--seed 1] [--runs 100]
 hookfuzz replay --seed N [--config hookfuzz.yaml]
 ```
 
-Exit codes: `0` all invariants held, `1` an invariant failed, `2` usage or setup error.
+Exit codes: `0` all invariants held, `1` an invariant failed, `2` usage or setup error
+(including an app that rejects every delivery), `130` interrupted. If shrinking is
+interrupted after a bug is found, the FAIL report is still printed.
 
 ## Limitations
 

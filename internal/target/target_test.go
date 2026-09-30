@@ -106,3 +106,14 @@ func TestUnreachableTargetExplainsItself(t *testing.T) {
 		t.Fatalf("err = %v, want it to ask whether the app is running", err)
 	}
 }
+
+func TestCanceledContextIsReportedAsInterruptedNotUnreachable(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer srv.Close()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	err := (&Client{ResetURL: srv.URL}).Reset(ctx)
+	if err == nil || strings.Contains(err.Error(), "is the app running?") || !strings.Contains(err.Error(), "interrupted") {
+		t.Fatalf("err = %v, want an interrupted error without the app-running hint", err)
+	}
+}

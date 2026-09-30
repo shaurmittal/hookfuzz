@@ -7,7 +7,8 @@ import "slices"
 // Minimize returns a 1-minimal subsequence of items for which fails is still
 // true: removing any single remaining element makes it pass. Order is kept.
 // It tries large chunks first, then smaller ones, down to single elements.
-// fails(items) must be true on entry.
+// fails(items) must be true on entry. If fails returns an error, Minimize
+// returns that error along with the smallest failing input found so far.
 func Minimize[T any](items []T, fails func([]T) (bool, error)) ([]T, error) {
 	n := 2
 	for len(items) >= 2 {
@@ -18,7 +19,7 @@ func Minimize[T any](items []T, fails func([]T) (bool, error)) ([]T, error) {
 		for _, c := range chunks {
 			ok, err := fails(c)
 			if err != nil {
-				return nil, err
+				return slices.Clone(items), err
 			}
 			if ok {
 				items, n, reduced = c, 2, true
@@ -33,7 +34,7 @@ func Minimize[T any](items []T, fails func([]T) (bool, error)) ([]T, error) {
 				comp := complement(chunks, i)
 				ok, err := fails(comp)
 				if err != nil {
-					return nil, err
+					return slices.Clone(items), err
 				}
 				if ok {
 					items, n, reduced = comp, max(n-1, 2), true
