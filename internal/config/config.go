@@ -126,6 +126,13 @@ func (c Config) validate() error {
 		if seen[inv.Name] {
 			return fmt.Errorf("duplicate invariant name %q", inv.Name)
 		}
+		// A misspelled event type would silently filter out every event.
+		for _, typ := range inv.EventTypes {
+			if !slices.Contains(scenario.EventTypes(), typ) {
+				return fmt.Errorf("invariant %q: unknown event type %q (known: %s)",
+					inv.Name, typ, strings.Join(scenario.EventTypes(), ", "))
+			}
+		}
 		seen[inv.Name] = true
 	}
 	return nil

@@ -22,6 +22,15 @@ var generators = map[string]func(*gen) []event.Event{
 	"subscription": subscription,
 }
 
+// EventTypes lists every event type the scenarios can generate.
+func EventTypes() []string {
+	return []string{
+		"payment_intent.succeeded", "checkout.session.completed",
+		"charge.succeeded", "charge.refunded",
+		"customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted",
+	}
+}
+
 // Names lists the known scenarios.
 func Names() []string { return []string{"checkout", "refund", "subscription"} }
 

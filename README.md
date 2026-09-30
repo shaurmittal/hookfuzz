@@ -81,6 +81,8 @@ your app verifies with, and declare invariants.
 | `matches_latest_event` | each object's `field` equals `event_field` on the newest (by `created`) acknowledged event for that object | `field`, `event_field`, `event_types` |
 
 A missing collection or field counts as a violation, so a typo can't hide a bug.
+For `matches_latest_event`, an object the app acknowledged events for but never
+stored is a violation too, and `event_types` must name event types hookfuzz generates.
 
 ### Commands
 
