@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/shauryamittal/hookfuzz/internal/config"
@@ -111,5 +112,28 @@ func TestTargetErrorsAbortTheRun(t *testing.T) {
 	r := &Runner{Config: testConfig(), Target: &fakeShop{resetErr: boom}}
 	if _, _, err := r.Run(context.Background(), 1, 5); !errors.Is(err, boom) {
 		t.Fatalf("err = %v, want %v", err, boom)
+	}
+}
+
+// rejectingShop answers every webhook with the same non-2xx status, like an
+// app whose signing secret or webhook path is misconfigured.
+type rejectingShop struct{ status int }
+
+func (r rejectingShop) Send(context.Context, event.Event) (int, error) { return r.status, nil }
+func (rejectingShop) Reset(context.Context) error                      { return nil }
+func (rejectingShop) State(context.Context) (target.State, error) {
+	return target.State{"shipments": {}}, nil
+}
+
+func TestAnAppThatAcknowledgesNothingIsASetupError(t *testing.T) {
+	r := &Runner{Config: testConfig(), Target: rejectingShop{status: 400}}
+	f, _, err := r.Run(context.Background(), 1, 5)
+	if f != nil || err == nil {
+		t.Fatalf("Run = %+v, %v; want a setup error, not a pass or a failure", f, err)
+	}
+	for _, want := range []string{"acknowledged none", "HTTP 400", "signing_secret", "webhook_url"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("err = %q, missing %q", err, want)
+		}
 	}
 }

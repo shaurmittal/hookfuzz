@@ -28,6 +28,7 @@ type Result struct {
 	// order they were first acknowledged.
 	Acknowledged []event.Event
 	Attempts     int
+	Rejected     map[int]int // non-2xx status code -> how many responses had it
 }
 
 // Run delivers the schedule in order. A non-2xx response puts the event back
@@ -42,7 +43,7 @@ func Run(ctx context.Context, s Sender, schedule []event.Event) (Result, error) 
 	for i, ev := range schedule {
 		queue[i] = item{ev: ev, attempt: 1}
 	}
-	var res Result
+	res := Result{Rejected: map[int]int{}}
 	acked := map[string]bool{}
 	for len(queue) > 0 {
 		it := queue[0]
@@ -59,6 +60,7 @@ func Run(ctx context.Context, s Sender, schedule []event.Event) (Result, error) 
 			}
 			continue
 		}
+		res.Rejected[status]++
 		if it.attempt < MaxAttempts {
 			queue = slices.Insert(queue, min(RetryGap, len(queue)), item{ev: it.ev, attempt: it.attempt + 1})
 		}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -163,5 +164,24 @@ func TestReplayReproducesTheRunReport(t *testing.T) {
 	code, replayOut, _ := runCLI("replay", "--seed", m[1], "--config", cfg)
 	if code != 1 || replayOut != runOut {
 		t.Fatalf("replay (code %d) differs from run.\nrun:\n%s\nreplay:\n%s", code, runOut, replayOut)
+	}
+}
+
+func TestRejectedDeliveriesAreASetupError(t *testing.T) {
+	// A wrong signing secret makes a real app answer 400 to every delivery.
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /webhook", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "signature verification failed", http.StatusBadRequest)
+	})
+	mux.HandleFunc("GET /state", func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, `{"shipments":[]}`)
+	})
+	mux.HandleFunc("POST /reset", func(w http.ResponseWriter, r *http.Request) {})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	code, stdout, stderr := runCLI("run", "--config", writeConfig(t, srv.URL))
+	if code != 2 || strings.Contains(stdout, "PASS") || !strings.Contains(stderr, "signing_secret") {
+		t.Fatalf("code %d, stdout %q, stderr %q; want exit 2 and a hint about signing_secret", code, stdout, stderr)
 	}
 }
