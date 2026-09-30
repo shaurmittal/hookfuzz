@@ -1,0 +1,47 @@
+# hookfuzz config for the sample shop in ./sample-app.
+# Start the app first:  cd sample-app && npm start
+target:
+  webhook_url: http://localhost:4242/webhook
+  state_url: http://localhost:4242/__hookfuzz/state
+  reset_url: http://localhost:4242/__hookfuzz/reset
+  signing_secret: whsec_test_hookfuzz
+
+scenarios: [checkout, refund, subscription]
+scenario_size: 5 # objects per scenario per run
+
+faults:
+  duplicate: 0.2 # chance each event is delivered twice in a row
+  reorder_window: 4 # shuffle deliveries within windows of this size
+  delay: 0.15 # chance a delivery is pushed 2-8 deliveries later
+  timeout_retry: 0.1 # chance an event "times out" and is redelivered later
+
+invariants:
+  # A checkout session must never ship more than one order.
+  - name: one_shipment_per_session
+    kind: max_count_per_key
+    collection: shipments
+    key: session_id
+    max: 1
+
+  # Never record more refunded than captured.
+  - name: refund_le_captured
+    kind: field_le
+    collection: charges
+    left: refunded
+    right: captured
+
+  # The stored refund must match the newest charge event (by created, not arrival).
+  - name: refund_matches_latest_charge_event
+    kind: matches_latest_event
+    collection: charges
+    field: refunded
+    event_types: [charge.succeeded, charge.refunded]
+    event_field: amount_refunded
+
+  # Final subscription status must match the newest subscription event (by created).
+  - name: subscription_status_matches_latest_event
+    kind: matches_latest_event
+    collection: subscriptions
+    field: status
+    event_types: [customer.subscription.created, customer.subscription.updated, customer.subscription.deleted]
+    event_field: status
