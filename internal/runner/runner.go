@@ -33,6 +33,10 @@ type Failure struct {
 	// Violations of Invariant from replaying Minimal. Empty means the minimal
 	// schedule passed on replay, which points at a nondeterministic app.
 	Violations []invariant.Violation
+	// Incomplete says why shrinking stopped early (an interrupt, or the app
+	// going away). Minimal is then the smallest failing schedule found so far
+	// and Violations come from the original run.
+	Incomplete string
 }
 
 // Runner ties config, the fault pipeline, and the target together.
@@ -96,14 +100,18 @@ func (r *Runner) RunSeed(ctx context.Context, seed int64) (*Failure, error) {
 		vs, err := r.Execute(ctx, sub)
 		return len(only(vs, name)) > 0, err
 	})
-	if err != nil {
-		return nil, fmt.Errorf("shrinking seed %d: %w", seed, err)
+	f := &Failure{Seed: seed, Invariant: name, Schedule: schedule, Minimal: minimal}
+	if err == nil {
+		var final []invariant.Violation
+		if final, err = r.Execute(ctx, minimal); err == nil {
+			f.Violations = only(final, name)
+			return f, nil
+		}
 	}
-	final, err := r.Execute(ctx, minimal)
-	if err != nil {
-		return nil, err
-	}
-	return &Failure{Seed: seed, Invariant: name, Schedule: schedule, Minimal: minimal, Violations: only(final, name)}, nil
+	// The bug is already found; don't throw it away because shrinking stopped.
+	f.Violations = only(violations, name)
+	f.Incomplete = err.Error()
+	return f, nil
 }
 
 // Run tries seeds start, start+1, ... up to runs of them, and stops at the

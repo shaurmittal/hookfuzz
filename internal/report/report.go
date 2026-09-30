@@ -19,6 +19,9 @@ func Failure(w io.Writer, f *runner.Failure, configPath string) {
 	for _, v := range f.Violations {
 		fmt.Fprintf(w, "  %s\n", v.Message)
 	}
+	if f.Incomplete != "" {
+		fmt.Fprintf(w, "  (shrinking stopped early (%s); this reproduction may not be minimal)\n", f.Incomplete)
+	}
 	fmt.Fprintf(w, "Minimal reproduction (%d of %d deliveries):\n", len(f.Minimal), len(f.Schedule))
 	notes := Annotate(f.Minimal)
 	for i, ev := range f.Minimal {

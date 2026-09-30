@@ -87,3 +87,19 @@ func TestMinimizePropagatesErrors(t *testing.T) {
 		t.Fatalf("err = %v, want %v", err, boom)
 	}
 }
+
+func TestMinimizeReturnsBestSoFarOnError(t *testing.T) {
+	boom := errors.New("target down")
+	calls := 0
+	fails := func(xs []int) (bool, error) {
+		calls++
+		if calls > 1 {
+			return false, boom
+		}
+		return slices.Contains(xs, 3), nil // first call: chunk [1 2 3 4] still fails
+	}
+	got, err := Minimize(seq(8), fails)
+	if !errors.Is(err, boom) || !slices.Equal(got, []int{1, 2, 3, 4}) {
+		t.Fatalf("Minimize = %v, %v; want the best failing input so far [1 2 3 4] and %v", got, err, boom)
+	}
+}

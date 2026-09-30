@@ -137,3 +137,36 @@ func TestAnAppThatAcknowledgesNothingIsASetupError(t *testing.T) {
 		}
 	}
 }
+
+// flakyShop is a fakeShop whose Reset starts failing after okResets calls,
+// like an app that crashes (or a user who hits Ctrl-C) during shrinking.
+type flakyShop struct {
+	fakeShop
+	okResets int
+	resets   int
+}
+
+func (f *flakyShop) Reset(ctx context.Context) error {
+	f.resets++
+	if f.resets > f.okResets {
+		return errors.New("connection refused")
+	}
+	return f.fakeShop.Reset(ctx)
+}
+
+func TestShrinkErrorStillReportsTheFailure(t *testing.T) {
+	r := &Runner{Config: testConfig(), Target: &fakeShop{}}
+	found, _, _ := r.Run(context.Background(), 1, 50)
+	if found == nil {
+		t.Fatal("setup: no failing seed")
+	}
+	// The full run gets one good reset, then the app goes away mid-shrink.
+	r.Target = &flakyShop{okResets: 2}
+	f, err := r.RunSeed(context.Background(), found.Seed)
+	if err != nil {
+		t.Fatalf("RunSeed err = %v; want the failure reported, not dropped", err)
+	}
+	if f == nil || !strings.Contains(f.Incomplete, "connection refused") || len(f.Minimal) == 0 || len(f.Violations) == 0 {
+		t.Fatalf("failure = %+v; want Incomplete set, a best-so-far Minimal, and the original violations", f)
+	}
+}

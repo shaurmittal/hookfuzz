@@ -58,7 +58,7 @@ func (c *Client) Send(ctx context.Context, ev event.Event) (int, error) {
 	req.Header.Set("Stripe-Signature", event.Sign(body, c.Secret, c.now().Unix()))
 	resp, err := c.httpClient().Do(req)
 	if err != nil {
-		return 0, unreachable("webhook", c.WebhookURL, err)
+		return 0, transportErr(ctx, "webhook", c.WebhookURL, err)
 	}
 	defer resp.Body.Close()
 	io.Copy(io.Discard, resp.Body)
@@ -73,7 +73,7 @@ func (c *Client) Reset(ctx context.Context) error {
 	}
 	resp, err := c.httpClient().Do(req)
 	if err != nil {
-		return unreachable("reset", c.ResetURL, err)
+		return transportErr(ctx, "reset", c.ResetURL, err)
 	}
 	defer resp.Body.Close()
 	io.Copy(io.Discard, resp.Body)
@@ -91,7 +91,7 @@ func (c *Client) State(ctx context.Context) (State, error) {
 	}
 	resp, err := c.httpClient().Do(req)
 	if err != nil {
-		return nil, unreachable("state", c.StateURL, err)
+		return nil, transportErr(ctx, "state", c.StateURL, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode/100 != 2 {
@@ -104,6 +104,11 @@ func (c *Client) State(ctx context.Context) (State, error) {
 	return s, nil
 }
 
-func unreachable(what, url string, err error) error {
+// transportErr explains a request that got no response. A canceled context
+// means the user interrupted the run, not that the app is down.
+func transportErr(ctx context.Context, what, url string, err error) error {
+	if ctx.Err() != nil {
+		return fmt.Errorf("interrupted: %w", ctx.Err())
+	}
 	return fmt.Errorf("cannot reach %s endpoint %s (is the app running?): %w", what, url, err)
 }
