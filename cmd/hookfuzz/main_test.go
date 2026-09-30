@@ -16,7 +16,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 // fakeShop is a tiny HTTP app with hookfuzz's inspection endpoints. It ships

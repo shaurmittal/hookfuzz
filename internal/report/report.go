@@ -6,8 +6,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
 )
 
 // Failure prints the broken invariant, the minimal timeline, and how to replay it.

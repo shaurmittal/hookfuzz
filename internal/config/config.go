@@ -13,9 +13,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/shauryamittal/hookfuzz/internal/fault"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/scenario"
+	"github.com/shaurmittal/hookfuzz/internal/fault"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/scenario"
 )
 
 // DefaultScenarioSize is how many objects each scenario creates per run.

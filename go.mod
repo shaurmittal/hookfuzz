@@ -1,4 +1,4 @@
-module github.com/shauryamittal/hookfuzz
+module github.com/shaurmittal/hookfuzz
 
 go 1.22
 

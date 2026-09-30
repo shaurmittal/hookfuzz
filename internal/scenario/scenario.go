@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 const (

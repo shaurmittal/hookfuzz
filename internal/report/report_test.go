@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
-	"github.com/shauryamittal/hookfuzz/internal/invariant"
-	"github.com/shauryamittal/hookfuzz/internal/runner"
+	"github.com/shaurmittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/invariant"
+	"github.com/shaurmittal/hookfuzz/internal/runner"
 )
 
 func ev(id, typ, obj string, created int64) event.Event {

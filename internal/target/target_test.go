@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 func TestSendSignsAndPostsJSON(t *testing.T) {

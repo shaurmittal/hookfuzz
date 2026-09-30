@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/shauryamittal/hookfuzz/internal/event"
+	"github.com/shaurmittal/hookfuzz/internal/event"
 )
 
 func testEvents(n int) []event.Event {
