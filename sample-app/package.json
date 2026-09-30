@@ -1,0 +1,15 @@
+{
+  "name": "hookfuzz-sample-shop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A tiny shop with planted webhook bugs, for hookfuzz to find.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.22.3",
+    "stripe": "^22.6.2"
+  }
+}
