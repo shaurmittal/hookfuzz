@@ -4,6 +4,8 @@ package runner
 import (
 	"context"
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/shauryamittal/hookfuzz/internal/config"
 	"github.com/shauryamittal/hookfuzz/internal/deliver"
@@ -50,18 +52,23 @@ func (r *Runner) Schedule(seed int64) ([]event.Event, error) {
 
 // Execute resets the app, delivers schedule, and checks every invariant.
 func (r *Runner) Execute(ctx context.Context, schedule []event.Event) ([]invariant.Violation, error) {
+	vs, _, err := r.execute(ctx, schedule)
+	return vs, err
+}
+
+func (r *Runner) execute(ctx context.Context, schedule []event.Event) ([]invariant.Violation, deliver.Result, error) {
 	if err := r.Target.Reset(ctx); err != nil {
-		return nil, err
+		return nil, deliver.Result{}, err
 	}
 	res, err := deliver.Run(ctx, r.Target, schedule)
 	if err != nil {
-		return nil, err
+		return nil, res, err
 	}
 	state, err := r.Target.State(ctx)
 	if err != nil {
-		return nil, err
+		return nil, res, err
 	}
-	return invariant.CheckAll(r.Config.Invariants, state, res.Acknowledged), nil
+	return invariant.CheckAll(r.Config.Invariants, state, res.Acknowledged), res, nil
 }
 
 // RunSeed runs one seed. If an invariant fails, it shrinks the schedule to
@@ -71,9 +78,15 @@ func (r *Runner) RunSeed(ctx context.Context, seed int64) (*Failure, error) {
 	if err != nil {
 		return nil, err
 	}
-	violations, err := r.Execute(ctx, schedule)
+	violations, res, err := r.execute(ctx, schedule)
 	if err != nil {
 		return nil, err
+	}
+	// If the app accepted nothing, every invariant holds vacuously. That is a
+	// broken setup (usually the signing secret or webhook path), not a pass.
+	if len(schedule) > 0 && len(res.Acknowledged) == 0 {
+		return nil, fmt.Errorf("seed %d: the app acknowledged none of %d deliveries (%s); check target.signing_secret and target.webhook_url",
+			seed, len(schedule), statusSummary(res.Rejected))
 	}
 	if len(violations) == 0 {
 		return nil, nil
@@ -116,4 +129,18 @@ func only(vs []invariant.Violation, name string) []invariant.Violation {
 		}
 	}
 	return out
+}
+
+// statusSummary formats rejected status counts, e.g. "HTTP 400 x132".
+func statusSummary(rejected map[int]int) string {
+	var codes []int
+	for code := range rejected {
+		codes = append(codes, code)
+	}
+	slices.Sort(codes)
+	var parts []string
+	for _, code := range codes {
+		parts = append(parts, fmt.Sprintf("HTTP %d x%d", code, rejected[code]))
+	}
+	return strings.Join(parts, ", ")
 }
