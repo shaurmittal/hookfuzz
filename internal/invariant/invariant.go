@@ -149,23 +149,30 @@ func (s Spec) checkFieldLE(items []map[string]any) []Violation {
 
 func (s Spec) checkLatest(items []map[string]any, acked []event.Event) []Violation {
 	latest := map[string]event.Event{}
+	var order []string // object IDs in first-acknowledged order, for stable output
 	for _, ev := range acked {
 		if len(s.EventTypes) > 0 && !slices.Contains(s.EventTypes, ev.Type) {
 			continue
 		}
 		// Newest by created, never by arrival. On a tie the first acknowledged wins.
 		id := ev.ObjectID()
-		if cur, ok := latest[id]; !ok || ev.Created > cur.Created {
+		cur, ok := latest[id]
+		if !ok {
+			order = append(order, id)
+		}
+		if !ok || ev.Created > cur.Created {
 			latest[id] = ev
 		}
 	}
 	var out []Violation
+	stored := map[string]bool{}
 	for i, item := range items {
 		idv, ok := item["id"]
 		if !ok {
 			out = append(out, s.violation("%s[%d] has no field \"id\"", s.Collection, i))
 			continue
 		}
+		stored[norm(idv)] = true
 		ev, ok := latest[norm(idv)]
 		if !ok {
 			continue
@@ -184,6 +191,14 @@ func (s Spec) checkLatest(items []map[string]any, acked []event.Event) []Violati
 		if norm(got) != norm(want) {
 			out = append(out, s.violation("%s: %s = %s, but the latest event %s (%s, created %d) says %s",
 				name, s.Field, norm(got), ev.ID, ev.Type, ev.Created, norm(want)))
+		}
+	}
+	// An object the app acknowledged events for but never stored was lost.
+	for _, id := range order {
+		if !stored[id] {
+			ev := latest[id]
+			out = append(out, s.violation("%s has acknowledged events but is absent from %s (latest event %s, %s, says %s = %v)",
+				id, s.Collection, ev.ID, ev.Type, s.EventField, norm(ev.Data.Object[s.EventField])))
 		}
 	}
 	return out

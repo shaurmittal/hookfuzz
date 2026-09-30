@@ -135,9 +135,11 @@ func TestFindsNonIdempotentFulfillment(t *testing.T) {
 func TestFindsRefundBeforeCharge(t *testing.T) {
 	base := startApp(t, "buggy")
 	f := mustFail(t, newRunner(base, []string{"refund"}, refundMatchesLatest), refundMatchesLatest.Name)
+	// A refund delivered before its charge is dropped, so the charge the app
+	// should hold is missing: that single delivery reproduces the bug.
 	m := f.Minimal
-	if len(m) != 2 || m[0].Type != "charge.refunded" || m[1].Type != "charge.succeeded" || m[0].ObjectID() != m[1].ObjectID() {
-		t.Fatalf("minimal = %v, want charge.refunded then charge.succeeded for one charge", describe(m))
+	if len(m) != 1 || m[0].Type != "charge.refunded" {
+		t.Fatalf("minimal = %v, want a lone charge.refunded", describe(m))
 	}
 }
 

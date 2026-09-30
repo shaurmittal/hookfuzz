@@ -157,3 +157,10 @@ func TestCheckAllKeepsSpecOrder(t *testing.T) {
 		t.Fatalf("CheckAll = %v, want refund_le_captured then one_shipment", vs)
 	}
 }
+
+func TestMatchesLatestEventFlagsObjectsMissingFromState(t *testing.T) {
+	// The app acknowledged a refund for ch_9 but never stored the charge.
+	acked := []event.Event{ev("evt_1", "charge.refunded", 10, map[string]any{"id": "ch_9", "amount_refunded": int64(500)})}
+	state := target.State{"charges": {}}
+	mustOne(t, refundLatest.Check(state, acked), "refund_latest", "ch_9 has acknowledged events but is absent from charges")
+}

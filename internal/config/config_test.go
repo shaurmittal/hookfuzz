@@ -59,6 +59,13 @@ func TestParseRejectsBadConfigs(t *testing.T) {
 		{"negative scenario size", validYAML + "scenario_size: -2\n", "scenario_size"},
 		{"duplicate invariant names", dupInvariant, "duplicate invariant name"},
 		{"empty file", "", "config is empty"},
+		{"unknown event type", validYAML + `  - name: sub_latest
+    kind: matches_latest_event
+    collection: subscriptions
+    field: status
+    event_types: [customer.subscription.updatd]
+    event_field: status
+`, `unknown event type "customer.subscription.updatd"`},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

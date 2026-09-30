@@ -120,3 +120,18 @@ func TestSubscriptionEvents(t *testing.T) {
 		}
 	}
 }
+
+func TestEventTypesListsEveryGeneratedType(t *testing.T) {
+	known := map[string]bool{}
+	for _, typ := range EventTypes() {
+		known[typ] = true
+	}
+	for seed := int64(1); seed <= 20; seed++ {
+		evs, _ := Generate(Names(), 5, seed)
+		for _, ev := range evs {
+			if !known[ev.Type] {
+				t.Fatalf("seed %d generated %s, which EventTypes() does not list", seed, ev.Type)
+			}
+		}
+	}
+}
